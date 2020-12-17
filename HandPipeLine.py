@@ -27,8 +27,10 @@ while cap.isOpened():
   image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
   if results.multi_hand_landmarks:
     for hand_landmarks in results.multi_hand_landmarks:
-      XPixel= hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * W
-      YPixel= hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * H
+      XPixel_IndexFinger= hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * W
+      YPixel_IndexFinger= hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * H
+
+      XPixel
       cv2.circle(image, (int(XPixel),int(YPixel)), 20, (255, 0, 0), -1)
       mp_drawing.draw_landmarks(
           image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
