@@ -49,6 +49,7 @@ TimerStart=time.time()
 # Secounds to wait before the drawing begins
 NeededTimeToStart= 3
 
+ImageSavedCounter=0
 ###############################################
 while True:
     # Time at the start of the loop
@@ -57,6 +58,7 @@ while True:
     TimePassed= CurrentTime - TimerStart
     # Read frame from the video stream
     ret, frame = capture.read()
+
     if frame is None:
         break
     # Mirror the frame
@@ -64,6 +66,12 @@ while True:
     # Draw  the ROI where the canvas will be drawn on it.
     image = cv.rectangle(frame, (50,50), (500,550), (255,255,255), 3)
 
+    #where we draw the contour points on
+    zeroes= np.zeros((frame.shape))
+    zeroes= zeroes.astype('float32')
+    
+    _temp= np.zeros((frame.shape))
+    _temp= _temp.astype('float32')
     # Time Remaining before drawing begins
     RemainingTime= NeededTimeToStart - TimePassed
     # Check if it's the time to draw
@@ -87,7 +95,8 @@ while True:
             BiggestContour+=50
             try:
                 # Get the convex hull of the biggest contour
-                hull = cv.convexHull(BiggestContour,returnPoints = False)      
+                hull = cv.convexHull(BiggestContour,returnPoints = False)
+                hull_= cv. convexHull(BiggestContour,returnPoints = True)     
             except:
                 hull = []
             # Get the perimtere? of the biggest contour
@@ -98,15 +107,20 @@ while True:
             if perimeter>300:
                 # Draw the hand contour
                 cv.drawContours(frame, [BiggestContour], 0, (0,255,0), 3)
+                cv.drawContours(zeroes, [hull_], 0, (0,255,0), 3)
                 j= 0
+
                 for i in range(len(hull)-1):
-                    if XDifferenceBetweenTwoPoints(BiggestContour[hull[j]][0][0],BiggestContour[hull[j+1]][0][0])>= 10:
+                    if XDifferenceBetweenTwoPoints(BiggestContour[hull[j]][0][0],BiggestContour[hull[j+1]][0][0])>= 7:
                         ClearPoints.append(BiggestContour[hull[j]][0][0])  
+                        cv.circle(frame,tuple(ClearPoints[-1]),20,[255,255,255],-1) 
                     j+=1 
+
+            
                 ClearPoints.sort(key= YAxis)
                 ClearPoints=ClearPoints[0:2]
                 for ClearPointsCounter in range(len(ClearPoints)):
-                    cv.circle(frame,tuple(ClearPoints[ClearPointsCounter]),6,[255,255,255],-1) 
+                    cv.circle(frame,tuple(ClearPoints[ClearPointsCounter]),10,[0,0,255],-1) 
                 if (len(ClearPoints)>=2):
                     if (XDifferenceBetweenTwoPoints(ClearPoints[0],ClearPoints[1])<150):
                         ClearPoints.sort(key=XAxis)
@@ -123,7 +137,12 @@ while True:
             p= ListToDraw[i]
             new_x=p[0]+600
             cv.circle(frame, (new_x,p[1]), 20, (255, 0, 0), -1)
-    cv.imshow("Frame", frame)
+    
+    #if len(ListToDraw)==0 and RemainingTime :
+        #cv.imwrite("i"+str(ImageSavedCounter)+".png",frame)
+        #ImageSavedCounter+=1
+
+    cv.imshow(WindowTitle, frame)
     
     keyboard = cv.waitKey(30)
     if keyboard == 'q' or keyboard == 27:

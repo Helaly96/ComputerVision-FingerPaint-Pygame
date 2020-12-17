@@ -18,7 +18,7 @@ class HandSegmentation():
 
     def Init_HSVSegmentation(self):
         self.LowerHSV=np.array([0, 10, 0])
-        self.UpperHSV=np.array([88, 255, 255]) 
+        self.UpperHSV=np.array([88, 74, 255]) 
 
     def UpdateHSV(self,Val,UpdatedParam):
         print(Val)
